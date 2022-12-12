@@ -1,0 +1,58 @@
+[
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "gcc",
+   "-O3",
+   "-Wall",
+   "-Wextra",
+   "-c",
+   "-o",
+   "build/obj/motorDriver/main.o",
+   "src/motorDriver/main.c"
+  ],
+  "file": "src/motorDriver/main.c"
+ },
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "gcc",
+   "-O3",
+   "-Wall",
+   "-Wextra",
+   "-c",
+   "-o",
+   "build/obj/motorDriver/socketHandler.o",
+   "src/motorDriver/socketHandler.c"
+  ],
+  "file": "src/motorDriver/socketHandler.c"
+ },
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "gcc",
+   "-O3",
+   "-Wall",
+   "-Wextra",
+   "-c",
+   "-o",
+   "build/obj/controller/main.o",
+   "src/controller/main.c"
+  ],
+  "file": "src/controller/main.c"
+ },
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "gcc",
+   "-O3",
+   "-Wall",
+   "-Wextra",
+   "-c",
+   "-o",
+   "build/obj/controller/socketHandler.o",
+   "src/controller/socketHandler.c"
+  ],
+  "file": "src/controller/socketHandler.c"
+ }
+]
