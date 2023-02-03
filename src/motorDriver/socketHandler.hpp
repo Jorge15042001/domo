@@ -17,9 +17,9 @@ class MotorSocket {
   int createSocket() const;
   void bindSocket() const;
   MotorMessage readMessage(const int client_id) const;
-  void processHomeMode(const MotorMessage& msg)const;
-  void processStepMode(const MotorMessage& msg)const;
-  void processContinuous(const MotorMessage& msg)const;
+  void processHomeMode(const MotorMessage &msg) const;
+  void processStepMode(const MotorMessage &msg) const;
+  void processContinuous(const MotorMessage &msg) const;
 
 public:
   MotorSocket(const char *const socket_name);
