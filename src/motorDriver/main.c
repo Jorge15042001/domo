@@ -1,3 +1,4 @@
+#include "motorStructs.h"
 #define SOCKET_NAME "/tmp/resol.sock"
 #define BUFFER_SIZE 12
 
@@ -10,41 +11,35 @@
 #include <sys/un.h>
 #include <unistd.h>
 
-int main(int argc, char *argv[]) {
-    int down_flag = 0;
-    char buffer[BUFFER_SIZE];
+int main() {
 
-    /* Create local socket. */
+  /* Create local socket. */
+  const int listen_socket = createSocket(SOCKET_NAME);
+  MotorState state = {0,AVAILABLE};
 
-    const int listen_socket = createSocket(SOCKET_NAME);
-    bindSocket(listen_socket,SOCKET_NAME);
-    startListening(listen_socket);
+  bindSocket(listen_socket, SOCKET_NAME);
+  startListening(listen_socket);
 
-    /* This is the main loop for handling connections. */
+  /* This is the main loop for handling connections. */
 
-    for (;;) {
+  for (;;) {
 
-        /* Wait for incoming connection. */
+    /* Wait for incoming connection. */
+    const int data_socket = accpetClient(listen_socket);
 
-        const int data_socket = accpetClient(listen_socket); 
+    MotorPath desiredPath = getDesiredPath(data_socket);
+    printf("desiredPath %ld %ld\n", desiredPath.initalPosition,
+           desiredPath.endPositon);
+    sleep(3);
+    const int success = 1;
+    write(data_socket, &success, sizeof(int));
 
-        MotorPath desiredPath  = getDesiredPath(data_socket);
-        printf("desiredPath %ld %ld\n",desiredPath.initalPosition,desiredPath.endPositon);
-        sleep(3);
-        const int success = 1;
-        write(data_socket,&success,sizeof(int));
+    close(data_socket);
+  }
 
-        close(data_socket);
+  close(listen_socket);
 
-        /* Quit on DOWN command. */
+  unlink(SOCKET_NAME);
 
-    }
-
-    close(listen_socket);
-
-    /* Unlink the socket. */
-
-    unlink(SOCKET_NAME);
-
-    exit(EXIT_SUCCESS);
+  exit(EXIT_SUCCESS);
 }

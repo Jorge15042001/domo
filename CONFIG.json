@@ -1,0 +1,45 @@
+{
+	"Lista": {
+		"Slider": {
+			"PORT": "/dev/ttyUSB0",
+			"BDRATE": 115200,
+			"PINICIAL": 40.0,
+			"PFINAL": 90.0,
+			"MAXLIMIT": 180.0,
+			"NUMPHOTOS": 10
+		}
+		,
+		"Camera": {
+			"Caps": {
+				"Format": "GRAY8",
+				"FrameSizeWidth": "640",
+				"FramesizeHeight": "480",
+				"FrameRateNumerator": "15",
+				"FrameRateDenominator": "1"
+			},
+			"Parameters": {
+				"Focus Auto": "true",
+				"Gain Auto": "true",
+				"Exposure Auto": "true",
+				"Focus ROI Left": "0",
+				"Focus ROI Top": "0",
+				"Focus ROI Width": "640", 
+				"Focus ROI Height": "480", 
+				"Brightness Reference": "128",
+				"Exposure Min": "100",
+				"Exposure Max": "142800",
+				"Gain Min": "4.000000",
+				"Gain Max": "63.000000",
+				"Exposure ROI Left": "0",
+				"Exposure ROI Width": "640",
+				"Exposure ROI Top": "0", 
+				"Exposure ROI Height": "480", 
+				"Brightness": "12",
+				"Gain": "36",
+				"Exposure": "37800",
+				"Focus": "0",
+				"Trigger Mode": "false"
+			}
+		}
+	}
+}
