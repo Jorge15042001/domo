@@ -1,4 +1,5 @@
 #include "socketHandler.hpp"
+#include "motorDriver.hpp"
 #include "motorStructs.hpp"
 #include <cstddef>
 #include <unistd.h>
@@ -7,8 +8,14 @@ MotorSocket::MotorSocket(const char *const SOCKET_NAME)
     : socket_name(SOCKET_NAME) {
   this->socket_id = this->createSocket();
   this->bindSocket();
+
+  // go to gome
+  this->motor.goHome();
 }
-MotorSocket::~MotorSocket() { close(this->socket_id); }
+MotorSocket::~MotorSocket() {
+  close(this->socket_id); 
+  unlink(this->socket_name);
+}
 
 int MotorSocket::createSocket() const {
   /*
@@ -57,54 +64,75 @@ void MotorSocket::startListening() const {
     exit(EXIT_FAILURE);
   }
 }
-int MotorSocket::accpetClient() const {
+MotorCient MotorSocket::accpetClient() const {
 
   const int data_socket = accept(this->socket_id, NULL, NULL);
   if (data_socket == -1) {
     perror("accept");
     exit(EXIT_FAILURE);
   }
-  return data_socket;
+  return {data_socket};
 }
 
 MotorMessage MotorSocket::readMessage(const int client_id) const {
   int message_type;
-  double val1;
-  double val2;
+  int movement;
+  std::size_t val1;
+  std::size_t val2;
 
-  const int err1 = read(client_id, &message_type, sizeof(int));
-  const int err2 = read(client_id, &val1, sizeof(float));
-  const int err3 = read(client_id, &val2, sizeof(float));
+  const int ret1 = read(client_id, &message_type, sizeof(int));
+  const int ret2 = read(client_id, &movement, sizeof(int));
+  const int ret3 = read(client_id, &val1, sizeof(std::size_t));
+  const int ret4 = read(client_id, &val2, sizeof(std::size_t));
 
-  if (err1 == -1 || err2 == -1 || err3 != -1) {
+  if (ret1 == -1 || ret2 == -1 || ret3 != -1 || ret4 != -1) {
     perror("Failed to read message from server");
     exit(EXIT_FAILURE);
   }
-
-  return {message_type, val1, val2};
+  return {message_type, movement, val1, val2};
 }
 
-void MotorSocket::processClient(const int client_id) const {
-  const MotorMessage msg = readMessage(client_id);
+void MotorSocket::processClient(const MotorCient& client) const {
+  const MotorMessage msg = readMessage(client.client_id);
   switch (msg.mode) {
-    case HOME_MODE:this->processHomeMode(msg);break;
-    case STEP_MODE:this->processStepMode(msg);break;
-    case CONTINUOUS_MODE:this->processContinuous(msg);break;
-    default:
-      perror("Failed to process message");
-      exit(EXIT_FAILURE);
+  case HOME_MODE:
+    this->processHomeMode(client, msg);
+    break;
+  case STEP_MODE:
+    this->processStepMode(client, msg);
+    break;
+  case CONTINUOUS_MODE:
+    this->processContinuous(client, msg);
+    break;
+  default:
+    perror("Failed to process message");
+    exit(EXIT_FAILURE);
   }
 }
-  
 
-//
-// MotorPath getDesiredPath(const int listen_socket) {
-//   MotorPath path;
-//   const int result = read(listen_socket, &path, sizeof(MotorPath));
-//   if (result == -1) {
-//     perror("Failed to read desired path");
-//     // TODO: dont exit
-//     exit(EXIT_FAILURE);
-//   }
-//   return path;
-// }
+void MotorSocket::processHomeMode(const MotorCient& client,
+                                  const MotorMessage &msg) const {
+  // make the motor go home
+  MotorResponse res = this->motor.goHome();
+  // response to the client 
+
+}
+
+void MotorSocket::processGoToMode(const MotorCient& client,
+                                  const MotorMessage &msg) const {
+  MotorResponse res = this->motor.goToPosition(msg.value1);
+}
+void MotorSocket::processStepMode(const MotorCient& client,
+                                  const MotorMessage &msg) const {
+  for (std::size_t i = 0; i<msg.value1; i++){
+    MotorResponse res = this->motor.moveSteps(1,msg.direction);
+    // if failed throw
+    //signal client of moved step
+  }
+  // reply to client
+}
+void MotorSocket::processContinuous(const MotorCient& client,
+                                    const MotorMessage &msg) const {
+  MotorResponse res = this->motor.moveContinuous(msg.value1, msg.value2);
+  //reply to the client 
+}

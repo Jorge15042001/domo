@@ -1,7 +1,9 @@
 #pragma once
 
+#include "motorDriver.hpp"
 #include "motorStructs.hpp"
 
+#include <cstddef>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -10,16 +12,35 @@
 #include <sys/un.h>
 #include <unistd.h>
 
+class MotorCient {
+
+public:
+  int client_id;
+  MotorCient(const int client_id) : client_id(client_id) {}
+  ~MotorCient() { close(this->client_id); }
+
+  MotorCient(const MotorCient &other) = delete;
+  MotorCient(MotorCient &&other) = delete;
+  MotorCient &operator=(const MotorCient &other) = delete;
+  MotorCient &operator=(MotorCient &&other) = delete;
+
+  void sendMessage();
+};
+
 class MotorSocket {
   std::string socket_name;
   int socket_id;
 
+  mutable MotorDriver motor;
+
   int createSocket() const;
   void bindSocket() const;
   MotorMessage readMessage(const int client_id) const;
-  void processHomeMode(const MotorMessage &msg) const;
-  void processStepMode(const MotorMessage &msg) const;
-  void processContinuous(const MotorMessage &msg) const;
+
+  void processHomeMode(const MotorCient& client, const MotorMessage &msg) const;
+  void processStepMode(const MotorCient& client, const MotorMessage &msg) const;
+  void processGoToMode(const MotorCient& client, const MotorMessage &msg) const;
+  void processContinuous(const MotorCient& client, const MotorMessage &msg) const;
 
 public:
   MotorSocket(const char *const socket_name);
@@ -32,7 +53,7 @@ public:
 
   void startListening() const;
   int accpetClient() const;
-  void processClient(const int client_id) const;
+  void processClient(const MotorCient& client) const;
 };
 
 // MotorPath getDesiredPath(const int);

@@ -1,6 +1,8 @@
 #pragma once
 
+#include <cstddef>
 enum MotorMode { STEP_MODE,HOME_MODE, CONTINUOUS_MODE, AVAILABLE };
+enum MotorMovent {CLOCK_WISE, COUNTER_CLOCK_wISE};
 
 struct MotorState{
   int mode;
@@ -10,6 +12,7 @@ struct MotorState{
 
 struct MotorMessage{
   int mode;
-  double value1;
-  double value2;
+  int direction;
+  std::size_t value1;
+  std::size_t value2;
 };
