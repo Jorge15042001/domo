@@ -31,19 +31,21 @@ class MotorSocket {
   std::string socket_name;
   int socket_id;
 
-  mutable MotorDriver motor;
 
   int createSocket() const;
   void bindSocket() const;
   MotorMessage readMessage(const int client_id) const;
 
-  void processHomeMode(const MotorCient& client, const MotorMessage &msg) const;
-  void processStepMode(const MotorCient& client, const MotorMessage &msg) const;
-  void processGoToMode(const MotorCient& client, const MotorMessage &msg) const;
-  void processContinuous(const MotorCient& client, const MotorMessage &msg) const;
+  void processHomeMode(const MotorCient &client, const MotorMessage &msg) const;
+  void processStepMode(const MotorCient &client, const MotorMessage &msg) const;
+  void processGoToMode(const MotorCient &client, const MotorMessage &msg) const;
+  void processContinuous(const MotorCient &client,
+                         const MotorMessage &msg) const;
 
 public:
-  MotorSocket(const char *const socket_name);
+  mutable MotorDriver motor;
+  MotorSocket(const char *const socket_name, const char *const motor_port,
+              const int bdrate);
   ~MotorSocket();
 
   MotorSocket(const MotorSocket &other) = delete;
@@ -53,7 +55,7 @@ public:
 
   void startListening() const;
   int accpetClient() const;
-  void processClient(const MotorCient& client) const;
+  void processClient(const MotorCient &client) const;
 };
 
 // MotorPath getDesiredPath(const int);

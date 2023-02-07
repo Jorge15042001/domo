@@ -1,20 +1,26 @@
 #pragma  once
 #include <cstddef>
+#include <CppLinuxSerial/SerialPort.hpp>
 
 struct MotorResponse{
   bool success;
+
 };
 
 class MotorDriver{
   // if this variable is set to true, it means "position" may not be accuarate and need to be recalibrated
   bool needs_home;
-  std::size_t position;
-  // MotorDriver();
+  double position;//mm
+  mn::CppLinuxSerial::SerialPort port;
+
 public:
+  MotorDriver(const char* const port, const int bdrate);
+  void initializeMotor();
   MotorResponse goHome();
-  MotorResponse goToPosition(const std::size_t position);
-  MotorResponse moveSteps(const std::size_t stpes,const int direction);
-  MotorResponse moveContinuous(const std::size_t start, const std::size_t end);
+  MotorResponse reset();
+  MotorResponse goToPosition(const double position);
+  MotorResponse moveSteps(const double stpes,const int direction);
+  MotorResponse moveContinuous(const double start, const double end);
 
 
 };

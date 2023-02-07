@@ -2,19 +2,22 @@
 #include "motorDriver.hpp"
 #include "motorStructs.hpp"
 #include <cstddef>
+#include <iostream>
 #include <unistd.h>
 
-MotorSocket::MotorSocket(const char *const SOCKET_NAME)
-    : socket_name(SOCKET_NAME) {
+MotorSocket::MotorSocket(const char *const SOCKET_NAME, const char *const motor_port,
+                         const int bdrate)
+    : socket_name(SOCKET_NAME), motor(motor_port, bdrate) {
+  // std::cout<<"creating socket"<<std::endl;
   this->socket_id = this->createSocket();
   this->bindSocket();
 
   // go to gome
-  this->motor.goHome();
+  // this->motor.goHome();
 }
 MotorSocket::~MotorSocket() {
-  close(this->socket_id); 
-  unlink(this->socket_name);
+  close(this->socket_id);
+  unlink(this->socket_name.c_str());
 }
 
 int MotorSocket::createSocket() const {
@@ -64,14 +67,14 @@ void MotorSocket::startListening() const {
     exit(EXIT_FAILURE);
   }
 }
-MotorCient MotorSocket::accpetClient() const {
+int MotorSocket::accpetClient() const {
 
   const int data_socket = accept(this->socket_id, NULL, NULL);
   if (data_socket == -1) {
     perror("accept");
     exit(EXIT_FAILURE);
   }
-  return {data_socket};
+  return data_socket;
 }
 
 MotorMessage MotorSocket::readMessage(const int client_id) const {
@@ -92,7 +95,7 @@ MotorMessage MotorSocket::readMessage(const int client_id) const {
   return {message_type, movement, val1, val2};
 }
 
-void MotorSocket::processClient(const MotorCient& client) const {
+void MotorSocket::processClient(const MotorCient &client) const {
   const MotorMessage msg = readMessage(client.client_id);
   switch (msg.mode) {
   case HOME_MODE:
@@ -110,29 +113,28 @@ void MotorSocket::processClient(const MotorCient& client) const {
   }
 }
 
-void MotorSocket::processHomeMode(const MotorCient& client,
+void MotorSocket::processHomeMode(const MotorCient &client,
                                   const MotorMessage &msg) const {
   // make the motor go home
   MotorResponse res = this->motor.goHome();
-  // response to the client 
-
+  // response to the client
 }
 
-void MotorSocket::processGoToMode(const MotorCient& client,
+void MotorSocket::processGoToMode(const MotorCient &client,
                                   const MotorMessage &msg) const {
   MotorResponse res = this->motor.goToPosition(msg.value1);
 }
-void MotorSocket::processStepMode(const MotorCient& client,
+void MotorSocket::processStepMode(const MotorCient &client,
                                   const MotorMessage &msg) const {
-  for (std::size_t i = 0; i<msg.value1; i++){
-    MotorResponse res = this->motor.moveSteps(1,msg.direction);
+  for (std::size_t i = 0; i < msg.value1; i++) {
+    MotorResponse res = this->motor.moveSteps(1, msg.direction);
     // if failed throw
-    //signal client of moved step
+    // signal client of moved step
   }
   // reply to client
 }
-void MotorSocket::processContinuous(const MotorCient& client,
+void MotorSocket::processContinuous(const MotorCient &client,
                                     const MotorMessage &msg) const {
   MotorResponse res = this->motor.moveContinuous(msg.value1, msg.value2);
-  //reply to the client 
+  // reply to the client
 }
