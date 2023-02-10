@@ -23,7 +23,6 @@ MotorDriver::MotorDriver(const char *const motor_port, const int bdrate)
 
 void MotorDriver::initializeMotor() {
   std::string readResponse;
-  readResponse.reserve(10);
 
 
   // set default values
@@ -38,19 +37,19 @@ void MotorDriver::initializeMotor() {
   std::cout << "Device unlocked" << std::endl;
   readResponse ="";
 
-  this->port.Write("$3=1\n");// changing direction
+  this->port.Write("$3=0\n");// changing direction
   this->port.Write("$5=1\n");// normally low stop switches
 
   this->port.Write("$20=0\n");// soft limits
   this->port.Write("$21=1\n");// hard limist
   this->port.Write("$22=1\n");// enable homing cicle
 
-  this->port.Write("$25=500\n");//velocidad de homing
+  this->port.Write("$25=200\n");//velocidad de homing
                                  //
   this->port.Write("$27=3\n");//pull of distance
                               //
-  this->port.Write("$100=500\n");// pasos por milimetro eje x
-  this->port.Write("$110=1500\n");// velocidad maxima x mm/min
+  this->port.Write("$100=639.36\n");// pasos por milimetro eje x
+  this->port.Write("$110=1000\n");// velocidad maxima x mm/min
                                  //
   this->port.Write("$120=50\n");// acceleration eje x
   this->port.Write("$122=50\n");// acceleration eje z
