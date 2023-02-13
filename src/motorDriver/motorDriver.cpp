@@ -1,114 +1,155 @@
 #include "motorDriver.hpp"
 #include "motorStructs.hpp"
+#include <CppLinuxSerial/SerialPort.hpp>
+#include <algorithm>
 #include <cstddef>
 #include <iostream>
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <thread>
 #include <unistd.h>
+#include <vector>
 
+std::vector<std::string> readLines(mn::CppLinuxSerial::SerialPort &port) {
+  std::vector<std::string> lines;
+  std::string buff;
+  while (true) {
+    std::string read;
+    port.Read(read);
+    buff += read;
+    if (buff.ends_with('\n'))
+      break;
+  }
+  // split the string in to lines
+  while (true) {
+    const std::size_t idx = buff.find('\n');
+    if (idx == std::string::npos)
+      break;
+    const std::string line = buff.substr(0, idx);
+    buff.erase(0, idx + 1);
+    lines.push_back(line);
+  }
+
+  return lines;
+}
 
 MotorDriver::MotorDriver(const char *const motor_port, const int bdrate)
     : port(motor_port, bdrate) {
   // this->port.SetTimeout(0); // non-blocking mode
   this->port.Open();
+  sleep(2);
 
   std::string readOpen;
-  usleep(2000000);
-  this->port.Read(readOpen);
+}
+bool MotorDriver::writeMessage(const char *const msg, const bool sync) {
+  this->port.Write(msg);
 
-  std::cout << "Read from motor" << readOpen << std::endl;
+  bool success = true;
+  std::size_t required_respnonses = 1;
+
+  while (required_respnonses !=
+         0) { // keep reading until 2 responses have arrived
+    for (auto &line : readLines(this->port)) { // read lines from serial port
+      // success answer
+      if (line.starts_with("ok")) {
+        required_respnonses--;
+      }
+      // error
+      else if (line.starts_with("error")) {
+        success = false;
+        required_respnonses--;
+      }
+    }
+  }
+  if (!success)
+    return false;
+  if (!sync)
+    return success;
+
+  bool keep_ = true;
+  while (keep_) {
+    this->port.Write("?\n");
+    for (const auto &line : readLines(this->port)) {
+      if (!line.starts_with('<'))
+        continue;
+      if (line.find("Idle") == std::string::npos)
+        continue;
+      keep_ = false;
+      break;
+    }
+
+    usleep(100000);
+  }
+
+  return success;
 }
 
-
 void MotorDriver::initializeMotor() {
-  std::string readResponse;
-
 
   // set default values
 
-
   std::cout << "Initiating slider" << std::endl;
-  this->port.Write("$X\n");
-  usleep(2000000);
   std::cout << "Unlocking" << std::endl;
-  this->port.Read(readResponse);
-  std::cout << "Received response: " << readResponse<<std::endl;
+  this->writeMessage("$X\n");
   std::cout << "Device unlocked" << std::endl;
-  readResponse ="";
 
-  this->port.Write("$3=0\n");// changing direction
-  this->port.Write("$5=1\n");// normally low stop switches
+  this->writeMessage("$3=0\n"); // changing direction
+  this->writeMessage("$5=1\n"); // normally low stop switches
 
-  this->port.Write("$20=0\n");// soft limits
-  this->port.Write("$21=1\n");// hard limist
-  this->port.Write("$22=1\n");// enable homing cicle
+  this->writeMessage("$20=1\n"); // soft limits
+  this->writeMessage("$21=1\n"); // hard limist
+  this->writeMessage("$22=1\n"); // enable homing cicle
 
-  this->port.Write("$25=200\n");//velocidad de homing
-                                 //
-  this->port.Write("$27=3\n");//pull of distance
-                              //
-  this->port.Write("$100=639.36\n");// pasos por milimetro eje x
-  this->port.Write("$110=1000\n");// velocidad maxima x mm/min
-                                 //
-  this->port.Write("$120=50\n");// acceleration eje x
-  this->port.Write("$122=50\n");// acceleration eje z
-  this->port.Write("$121=50\n");// acceleration eje y
+  this->writeMessage("$25=200\n"); // velocidad de homing
 
-  this->port.Write("G04 P5.0\n");
+  this->writeMessage("$27=3\n"); // pull of distance
 
-  usleep(1000000);
-  this->port.Read(readResponse);
-  std::cout << "Received response: " << readResponse<<std::endl;
-  readResponse ="";
+  this->writeMessage("$100=639.36\n"); // pasos por milimetro eje x
+  this->writeMessage("$110=1000\n");   // velocidad maxima x mm/min
 
+  this->writeMessage("$120=50\n"); // acceleration eje x
+
+  this->writeMessage("$130=178\n"); // acceleration eje y
+
+  // this->port.Write("G4P5.0\n");
   this->goHome();
-
 }
 
 MotorResponse MotorDriver::goHome() {
-  
-  std::string readResponse;
 
-  std::cout<<"going home"<<std::endl;
+  std::cout << "going home" << std::endl;
 
-  this->port.Write("$HX\n");// acceleration eje y
-  this->port.Write("G04 P5.0\n");
-  this->port.Write("?");
-  this->port.Read(readResponse);
-  std::cout << "Received response: " << readResponse<<std::endl;
+  const bool success = this->writeMessage("$HX\n",true);
 
-  return {true};
+  return {success, true};
 }
 
 MotorResponse MotorDriver::goToPosition(const double pos) {
-  const long steps = pos - this->position;
-  std::string readResponse;
-
-  if (steps == 0)
-    return MotorResponse{true};
-
-  this->port.Write("$J=X"+std::to_string(pos)+"F400\n");
-  sleep(50);
-  
-  this->port.Read(readResponse);
-  std::cout << "Received response: " << readResponse<<std::endl;
-
-
+  std::cout << "gointg to position mode"
+            << "position: " << pos << std::endl;
+  // transform from normal coordinates to device coordinates(negative)
+  const double movement = pos * -1;
+  const bool succ = this->writeMessage(
+      ("$J=G90G21X" + std::to_string(movement) + "F400\n").c_str(),true);
+  return {succ, true};
 }
-MotorResponse MotorDriver::moveSteps(const double stpes,
-                                     const int direction) {
-  // move steps in the specified direction
-
-  // reply to server
+MotorResponse MotorDriver::moveMilimiters(const double milimiters) {
+  // transform from normal coordinates to device coordinates(negative)
+  const double movement = milimiters * -1;
+  const bool succ = this->writeMessage(
+      ("$J=G91G21X" + std::to_string(movement) + "F400\n").c_str(), true);
+  return {succ, true};
 }
 MotorResponse MotorDriver::moveContinuous(const double start,
                                           const double end) {
   //  go to the start of the movement
   MotorResponse res = this->goToPosition(start);
+  // signal the motor is ready
 
   // move until end
   MotorResponse res2 = this->goToPosition(end);
+  // signal de motor have reached final position
 
   // reply to server
 }

@@ -14,7 +14,7 @@ OBJ_FILES_motorServer := $(patsubst $(SRC_DIR_motorServer)/%.cpp,$(OBJ_DIR_motor
 
 
 # CXXFLAGS := -O3 -Wall -Wextra  -fsanitize=address
-CXXFLAGS := -Wall -Wextra  -fsanitize=address
+CXXFLAGS := -Wall -Wextra  -fsanitize=address -std=c++20
 
 
 

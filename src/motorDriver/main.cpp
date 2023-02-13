@@ -21,8 +21,9 @@ int main() {
   std::cout<<"socket created"<<std::endl;
 
   socket.motor.initializeMotor();
-  sleep(20);
-  socket.motor.goToPosition(-5);
+  // socket.motor.goToPosition(5);
+  // socket.motor.moveMilimiters(100);
+  // socket.motor.moveContinuous(5, 100);
 
   socket.startListening();
 

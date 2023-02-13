@@ -34,7 +34,8 @@ class MotorSocket {
 
   int createSocket() const;
   void bindSocket() const;
-  MotorMessage readMessage(const int client_id) const;
+  [[nodiscard]] MotorMessage readMessage(const int client_id) const;
+  [[nodiscard]] bool writeMessage(const int client_id, const MotorResponse&msg) const;
 
   void processHomeMode(const MotorCient &client, const MotorMessage &msg) const;
   void processStepMode(const MotorCient &client, const MotorMessage &msg) const;

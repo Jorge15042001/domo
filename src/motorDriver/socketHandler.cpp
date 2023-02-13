@@ -5,8 +5,8 @@
 #include <iostream>
 #include <unistd.h>
 
-MotorSocket::MotorSocket(const char *const SOCKET_NAME, const char *const motor_port,
-                         const int bdrate)
+MotorSocket::MotorSocket(const char *const SOCKET_NAME,
+                         const char *const motor_port, const int bdrate)
     : socket_name(SOCKET_NAME), motor(motor_port, bdrate) {
   // std::cout<<"creating socket"<<std::endl;
   this->socket_id = this->createSocket();
@@ -78,21 +78,25 @@ int MotorSocket::accpetClient() const {
 }
 
 MotorMessage MotorSocket::readMessage(const int client_id) const {
-  int message_type;
-  int movement;
-  std::size_t val1;
-  std::size_t val2;
 
-  const int ret1 = read(client_id, &message_type, sizeof(int));
-  const int ret2 = read(client_id, &movement, sizeof(int));
-  const int ret3 = read(client_id, &val1, sizeof(std::size_t));
-  const int ret4 = read(client_id, &val2, sizeof(std::size_t));
+  MotorMessage msg;
 
-  if (ret1 == -1 || ret2 == -1 || ret3 != -1 || ret4 != -1) {
+  const int ret = read(client_id, &msg, sizeof(MotorMessage));
+
+  if (ret == -1) {
     perror("Failed to read message from server");
     exit(EXIT_FAILURE);
   }
-  return {message_type, movement, val1, val2};
+  return msg;
+}
+bool MotorSocket::writeMessage(const int client_id,
+                               const MotorResponse &msg) const {
+  const int ret = write(client_id, &msg, sizeof(MotorResponse));
+  if (ret == -1) {
+    perror("Failed to read message from server");
+    exit(EXIT_FAILURE);
+  }
+  return ret > 0;
 }
 
 void MotorSocket::processClient(const MotorCient &client) const {
@@ -116,25 +120,52 @@ void MotorSocket::processClient(const MotorCient &client) const {
 void MotorSocket::processHomeMode(const MotorCient &client,
                                   const MotorMessage &msg) const {
   // make the motor go home
-  MotorResponse res = this->motor.goHome();
+  const MotorResponse res = this->motor.goHome();
   // response to the client
+  const bool succ = this->writeMessage(client.client_id, res);
+  
 }
 
 void MotorSocket::processGoToMode(const MotorCient &client,
                                   const MotorMessage &msg) const {
-  MotorResponse res = this->motor.goToPosition(msg.value1);
+  const MotorResponse res = this->motor.goToPosition(msg.value1);
+  // response to the client
 }
 void MotorSocket::processStepMode(const MotorCient &client,
                                   const MotorMessage &msg) const {
-  for (std::size_t i = 0; i < msg.value1; i++) {
-    MotorResponse res = this->motor.moveSteps(1, msg.direction);
-    // if failed throw
-    // signal client of moved step
+  std::cout << "stting initial position" << std::endl;
+  MotorResponse res = this->motor.goToPosition(msg.value1);
+  const double step_size = (msg.value2 - msg.value1) / msg.steps;
+  std::cout<<"step size:"<<step_size<<std::endl;
+  for (std::size_t i = 0; i < msg.steps; i++) {
+
+    res = this->motor.moveMilimiters(step_size);
+    if (!res.success)
+      return;
+    // signal the client
+    const bool write_succ = this->writeMessage(client.client_id, {true, false});
+    if (!write_succ)
+      break;
+    // wait for the client to con
+    MotorMessage m = this->readMessage(client.client_id);
+    if (m.mode!=CONTINUE)break;
   }
-  // reply to client
+  // repley to client
+  const bool write_succ = this->writeMessage(client.client_id, {true, true});
 }
 void MotorSocket::processContinuous(const MotorCient &client,
                                     const MotorMessage &msg) const {
-  MotorResponse res = this->motor.moveContinuous(msg.value1, msg.value2);
+  // MotorResponse res = this->motor.moveContinuous(msg.value1, msg.value2);
+  const MotorResponse res1 = this->motor.goToPosition(msg.value1);
+  // signal the client
+    const bool write_succ = this->writeMessage(client.client_id, {true, false});
+    if (!write_succ)return;
+    //wait for CONTINUE signal
+    const MotorMessage m = this->readMessage(client.client_id);
+    if (m.mode!=CONTINUE)return;
+
+  const MotorResponse res2 = this->motor.goToPosition(msg.value2);
   // reply to the client
+  const bool write_succ2 = this->writeMessage(client.client_id, res2);
+
 }

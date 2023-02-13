@@ -2,57 +2,76 @@
  {
   "directory": "/home/jorge1504/projects/domo",
   "arguments": [
-   "gcc",
-   "-O3",
+   "g++",
    "-Wall",
    "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
    "-c",
    "-o",
    "build/obj/motorDriver/main.o",
-   "src/motorDriver/main.c"
+   "src/motorDriver/main.cpp"
   ],
-  "file": "src/motorDriver/main.c"
+  "file": "src/motorDriver/main.cpp"
  },
  {
   "directory": "/home/jorge1504/projects/domo",
   "arguments": [
-   "gcc",
-   "-O3",
+   "g++",
    "-Wall",
    "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-c",
+   "-o",
+   "build/obj/motorDriver/motorDriver.o",
+   "src/motorDriver/motorDriver.cpp"
+  ],
+  "file": "src/motorDriver/motorDriver.cpp"
+ },
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
    "-c",
    "-o",
    "build/obj/motorDriver/socketHandler.o",
-   "src/motorDriver/socketHandler.c"
+   "src/motorDriver/socketHandler.cpp"
   ],
-  "file": "src/motorDriver/socketHandler.c"
+  "file": "src/motorDriver/socketHandler.cpp"
  },
  {
   "directory": "/home/jorge1504/projects/domo",
   "arguments": [
-   "gcc",
-   "-O3",
+   "g++",
    "-Wall",
    "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
    "-c",
    "-o",
    "build/obj/controller/main.o",
-   "src/controller/main.c"
+   "src/controller/main.cpp"
   ],
-  "file": "src/controller/main.c"
+  "file": "src/controller/main.cpp"
  },
  {
   "directory": "/home/jorge1504/projects/domo",
   "arguments": [
-   "gcc",
-   "-O3",
+   "g++",
    "-Wall",
    "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
    "-c",
    "-o",
    "build/obj/controller/socketHandler.o",
-   "src/controller/socketHandler.c"
+   "src/controller/socketHandler.cpp"
   ],
-  "file": "src/controller/socketHandler.c"
+  "file": "src/controller/socketHandler.cpp"
  }
 ]
