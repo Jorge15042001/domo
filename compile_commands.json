@@ -73,5 +73,50 @@
    "src/controller/socketHandler.cpp"
   ],
   "file": "src/controller/socketHandler.cpp"
+ },
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-c",
+   "-o",
+   "build/obj/cameraDriver/main.o",
+   "src/cameraDriver/main.cpp"
+  ],
+  "file": "src/cameraDriver/main.cpp"
+ },
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-c",
+   "-o",
+   "build/obj/cameraDriver/motorDriver.o",
+   "src/cameraDriver/motorDriver.cpp"
+  ],
+  "file": "src/cameraDriver/motorDriver.cpp"
+ },
+ {
+  "directory": "/home/jorge1504/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-c",
+   "-o",
+   "build/obj/cameraDriver/socketHandler.o",
+   "src/cameraDriver/socketHandler.cpp"
+  ],
+  "file": "src/cameraDriver/socketHandler.cpp"
  }
 ]
