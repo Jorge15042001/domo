@@ -34,6 +34,7 @@ class MotorSocket {
 
   int createSocket() const;
   void bindSocket() const;
+  //TODO: move this method to the client
   [[nodiscard]] MotorMessage readMessage(const int client_id) const;
   [[nodiscard]] bool writeMessage(const int client_id, const MotorResponse&msg) const;
 

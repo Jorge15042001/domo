@@ -21,6 +21,7 @@ class MotorDriver{
 public:
   MotorDriver(const char* const port, const int bdrate);
   void initializeMotor();
+  //TODO: readMessage???
   [[nodiscard]] bool writeMessage(const char * const msg,const bool sync = false);
   [[nodiscard]] MotorResponse goHome();
   [[nodiscard]] MotorResponse reset();
