@@ -1,0 +1,3 @@
+[submodule "modules/single-axis-motor-driver"]
+	path = modules/single-axis-motor-driver
+	url = git@github.com:Jorge15042001/single-axis-motor-drive.git
