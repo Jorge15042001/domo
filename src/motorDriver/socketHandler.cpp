@@ -8,8 +8,10 @@
 
 
 bool MotorCient::reply(const MotorResponse &msg)const{
+  fmt::print("replying...\n");
   const int ret = write(this->client_id, &msg, sizeof(msg));
   return ret != -1 && ret == sizeof(msg);
+  fmt::print("replyed...\n");
 }
 
 

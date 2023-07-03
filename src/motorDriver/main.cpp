@@ -1,6 +1,7 @@
 #include "motorStructs.hpp"
 #include "socketHandler.hpp"
 
+
 #include <cstddef>
 #include <iostream>
 #include <stdio.h>
@@ -21,6 +22,7 @@ int main() {
   std::cout<<"socket created"<<std::endl;
 
   socket.motor.initializeMotor();
+  // socket.motor.goHome();
   // socket.motor.goToPosition(5);
   // socket.motor.moveMilimiters(100);
   // socket.motor.moveContinuous(5, 100);

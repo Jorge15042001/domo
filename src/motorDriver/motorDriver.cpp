@@ -3,6 +3,7 @@
 #include <CppLinuxSerial/SerialPort.hpp>
 #include <algorithm>
 #include <cstddef>
+#include <fmt/core.h>
 #include <iostream>
 #include <ostream>
 #include <sstream>
@@ -32,7 +33,10 @@ MotorDriver::MotorDriver(const char *const motor_port, const int bdrate)
     : serian_channel(motor_port, bdrate) {
 }
 
-void MotorDriver::initializeMotor() {}
+void MotorDriver::initializeMotor() {
+  std::cout<<"initializing motor"<<std::endl;
+  // goHome();
+}
 
 MotorResponse MotorDriver::goHome() {
   const MotorMessage msg {MotorMode::HOME_MODE,MovementUnit::mm,0,0};

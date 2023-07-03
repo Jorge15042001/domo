@@ -1,5 +1,6 @@
 #pragma once
 // #include <fmt/core.h>
+#include <fmt/core.h>
 #include <fmt/format.h>
 #include <iostream>
 #include <string>
@@ -76,8 +77,8 @@ struct MotorResponse{
 
   MotorResponse(const std::string& str){
     auto params_str = split(str, ';');
-    if (params_str.size()==4){
-      std::cout<<"params_str does not have the same number of arguments"<<std::endl;
+    if (params_str.size()!=5){
+      std::cout<<"params_str does not have the correct number of arguments"<<std::endl;
       throw "can't build";
     }
     int succ ;
@@ -85,7 +86,7 @@ struct MotorResponse{
     this->success = (bool)succ;
     std::from_chars(params_str[1].data(),params_str[1].data()+params_str[1].size(),this->current_step_pos);
     std::from_chars(params_str[2].data(),params_str[2].data()+params_str[2].size(),this->current_mm_pos);
-    std::from_chars(params_str[2].data(),params_str[2].data()+params_str[2].size(),this->current_rev_pos);
+    std::from_chars(params_str[3].data(),params_str[3].data()+params_str[3].size(),this->current_rev_pos);
 
   }
 };

@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-static std::vector<std::string_view> split(const std::string str, const char delim){
+static std::vector<std::string_view> split(const std::string& str, const char delim){
     std::vector<std::string_view> result;
 
     int indexCommaToLeftOfColumn = 0;
