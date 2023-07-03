@@ -17,7 +17,7 @@ int main() {
 
   /* Create local socket. */
 
-  MotorSocket socket {SOCKET_NAME,"/dev/ttyACM0",115200};
+  MotorSocket socket {SOCKET_NAME,"/dev/ttyACM0",2000000};
   std::cout<<"socket created"<<std::endl;
 
   socket.motor.initializeMotor();

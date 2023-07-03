@@ -18,13 +18,13 @@ public:
   int client_id;
   MotorCient(const int client_id) : client_id(client_id) {}
   ~MotorCient() { close(this->client_id); }
+  [[nodiscard]] bool reply(const MotorResponse& msg)const;
 
   MotorCient(const MotorCient &other) = delete;
   MotorCient(MotorCient &&other) = delete;
   MotorCient &operator=(const MotorCient &other) = delete;
   MotorCient &operator=(MotorCient &&other) = delete;
-
-  void sendMessage();
+  
 };
 
 class MotorSocket {
@@ -36,13 +36,12 @@ class MotorSocket {
   void bindSocket() const;
   //TODO: move this method to the client
   [[nodiscard]] MotorMessage readMessage(const int client_id) const;
-  [[nodiscard]] bool writeMessage(const int client_id, const MotorResponse&msg) const;
 
-  void processHomeMode(const MotorCient &client, const MotorMessage &msg) const;
-  void processStepMode(const MotorCient &client, const MotorMessage &msg) const;
-  void processGoToMode(const MotorCient &client, const MotorMessage &msg) const;
-  void processContinuous(const MotorCient &client,
-                         const MotorMessage &msg) const;
+  // void processHomeMode(const MotorCient &client, const MotorMessage &msg) const;
+  // void processStepMode(const MotorCient &client, const MotorMessage &msg) const;
+  // void processGoToMode(const MotorCient &client, const MotorMessage &msg) const;
+  // void processContinuous(const MotorCient &client,
+  //                        const MotorMessage &msg) const;
 
 public:
   mutable MotorDriver motor;

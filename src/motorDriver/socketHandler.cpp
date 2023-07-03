@@ -2,8 +2,16 @@
 #include "motorDriver.hpp"
 #include "motorStructs.hpp"
 #include <cstddef>
+#include <fmt/core.h>
 #include <iostream>
 #include <unistd.h>
+
+
+bool MotorCient::reply(const MotorResponse &msg)const{
+  const int ret = write(this->client_id, &msg, sizeof(msg));
+  return ret != -1 && ret == sizeof(msg);
+}
+
 
 MotorSocket::MotorSocket(const char *const SOCKET_NAME,
                          const char *const motor_port, const int bdrate)
@@ -89,83 +97,26 @@ MotorMessage MotorSocket::readMessage(const int client_id) const {
   }
   return msg;
 }
-bool MotorSocket::writeMessage(const int client_id,
-                               const MotorResponse &msg) const {
-  const int ret = write(client_id, &msg, sizeof(MotorResponse));
-  if (ret == -1) {
-    perror("Failed to read message from server");
-    exit(EXIT_FAILURE);
-  }
-  return ret > 0;
-}
 
 void MotorSocket::processClient(const MotorCient &client) const {
   const MotorMessage msg = readMessage(client.client_id);
-  switch (msg.mode) {
-  case HOME_MODE:
-    this->processHomeMode(client, msg);
-    break;
-  case STEP_MODE:
-    this->processStepMode(client, msg);
-    break;
-  case CONTINUOUS_MODE:
-    this->processContinuous(client, msg);
-    break;
+  fmt::print("read {}", msg.movement_mode);
+  std::cout<<std::endl;
+  switch (msg.movement_mode) {
+  case HOME_MODE: {
+    auto response = this->motor.goHome();
+    client.reply(response);
+  } break;
+  case RELATIVE: {
+    auto response = this->motor.goHome();
+    client.reply(response);
+  } break;
+  case ABSOLUTE: {
+    auto response = this->motor.goHome();
+    client.reply(response);
+  } break;
   default:
     perror("Failed to process message");
-    exit(EXIT_FAILURE);
+    client.reply({false,0,0,0});
   }
-}
-
-void MotorSocket::processHomeMode(const MotorCient &client,
-                                  const MotorMessage &msg) const {
-  // make the motor go home
-  const MotorResponse res = this->motor.goHome();
-  // response to the client
-  const bool succ = this->writeMessage(client.client_id, res);
-  
-}
-
-void MotorSocket::processGoToMode(const MotorCient &client,
-                                  const MotorMessage &msg) const {
-  const MotorResponse res = this->motor.goToPosition(msg.value1);
-  // response to the client
-}
-void MotorSocket::processStepMode(const MotorCient &client,
-                                  const MotorMessage &msg) const {
-  std::cout << "stting initial position" << std::endl;
-  MotorResponse res = this->motor.goToPosition(msg.value1);
-  const double step_size = (msg.value2 - msg.value1) / msg.steps;
-  std::cout<<"step size:"<<step_size<<std::endl;
-  for (std::size_t i = 0; i < msg.steps; i++) {
-
-    res = this->motor.moveMilimiters(step_size);
-    if (!res.success)
-      return;
-    // signal the client
-    const bool write_succ = this->writeMessage(client.client_id, {true, false});
-    if (!write_succ)
-      break;
-    // wait for the client to con
-    MotorMessage m = this->readMessage(client.client_id);
-    if (m.mode!=CONTINUE)break;
-  }
-  // repley to client
-  const bool write_succ = this->writeMessage(client.client_id, {true, true});
-}
-void MotorSocket::processContinuous(const MotorCient &client,
-                                    const MotorMessage &msg) const {
-  // MotorResponse res = this->motor.moveContinuous(msg.value1, msg.value2);
-  const MotorResponse res1 = this->motor.goToPosition(msg.value1);
-  // signal the client
-    const bool write_succ = this->writeMessage(client.client_id, {true, false});
-    if (!write_succ)return;
-    //wait for CONTINUE signal
-    const MotorMessage m = this->readMessage(client.client_id);
-    if (m.mode!=CONTINUE)return;
-
-  const MotorResponse res2 = this->motor.goToPosition(msg.value2);
-  // reply to the client
-  const bool write_succ2 = this->writeMessage(client.client_id, res2);
-
 }

@@ -29,7 +29,7 @@ $(OBJ_DIR_controler)/%.o: $(SRC_DIR_controler)/%.cpp
 	$(CC)   $(CXXFLAGS)   -c -o $@ $^
 
 $(OUTPUT_CONTROLER): $(OBJ_FILES_controler)
-	$(CC)  -o $@ $^   $(CXXFLAGS)
+	$(CC)  -o $@ $^   $(CXXFLAGS) -lfmt
 
 
 
@@ -40,7 +40,7 @@ $(OBJ_DIR_motorServer)/%.o: $(SRC_DIR_motorServer)/%.cpp
 
 $(OUTPUT_SERVER_MOTOR): $(OBJ_FILES_motorServer)
 	mkdir -p $(OBJ_DIR_motorServer)
-	$(CC)  -o $@ $^   $(CXXFLAGS) -lCppLinuxSerial
+	$(CC)  -o $@ $^   $(CXXFLAGS) -lCppLinuxSerial -lfmt
 
 
 $(OBJ_DIR_cameraServer)/%.o: $(SRC_DIR_cameraServer)/%.cpp

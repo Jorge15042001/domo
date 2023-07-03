@@ -1,4 +1,5 @@
 #include "socketHandler.hpp"
+#include <fmt/core.h>
 #include <iostream>
 #include <optional>
 #include <stdio.h>
@@ -30,8 +31,10 @@ void MotorSocketClient::connectToSocket() {
   addr.sun_family = AF_UNIX;
   strncpy(addr.sun_path, this->socket_name.c_str(), sizeof(addr.sun_path) - 1);
 
+  std::cout<<std::endl;
   int ret = connect(this->id, (const struct sockaddr *)&addr,
                     sizeof(struct sockaddr_un));
+  std::cout<<std::endl;
   if (ret == -1) {
     fprintf(stderr, "The server is down.\n");
     exit(EXIT_FAILURE);
