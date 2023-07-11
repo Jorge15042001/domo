@@ -6,14 +6,12 @@
 #include <iostream>
 #include <unistd.h>
 
-
-bool MotorCient::reply(const MotorResponse &msg)const{
+bool MotorCient::reply(const MotorResponse &msg) const {
   fmt::print("replying...\n");
   const int ret = write(this->client_id, &msg, sizeof(msg));
   return ret != -1 && ret == sizeof(msg);
   fmt::print("replyed...\n");
 }
-
 
 MotorSocket::MotorSocket(const char *const SOCKET_NAME,
                          const char *const motor_port, const int bdrate)
@@ -101,24 +99,31 @@ MotorMessage MotorSocket::readMessage(const int client_id) const {
 }
 
 void MotorSocket::processClient(const MotorCient &client) const {
-  const MotorMessage msg = readMessage(client.client_id);
-  fmt::print("read {}", msg.movement_mode);
-  std::cout<<std::endl;
-  switch (msg.movement_mode) {
-  case HOME_MODE: {
-    auto response = this->motor.goHome();
-    client.reply(response);
-  } break;
-  case RELATIVE: {
-    auto response = this->motor.goHome();
-    client.reply(response);
-  } break;
-  case ABSOLUTE: {
-    auto response = this->motor.goHome();
-    client.reply(response);
-  } break;
-  default:
-    perror("Failed to process message");
-    client.reply({false,0,0,0});
+  bool loop = true;
+  while (loop) {
+    const MotorMessage msg = readMessage(client.client_id);
+    switch (msg.movement_mode) {
+    case END: {
+      loop = false;
+      client.reply({});
+    } break;
+    case HOME_MODE: {
+      auto response = this->motor.goHome();
+      client.reply(response);
+    } break;
+    case RELATIVE: {
+      auto response =
+          this->motor.relativeMove(msg.speed, msg.mag, msg.movement_unit);
+      client.reply(response);
+    } break;
+    case ABSOLUTE: {
+      auto response =
+          this->motor.absoluteMove(msg.speed, msg.mag, msg.movement_unit);
+      client.reply(response);
+    } break;
+    default:
+      perror("Failed to process message");
+      client.reply({false, 0, 0, 0});
+    }
   }
 }

@@ -3,6 +3,7 @@
 
 
 #include <cstddef>
+#include <fmt/core.h>
 #include <iostream>
 #include <stdio.h>
 #include <stdlib.h>
@@ -35,6 +36,7 @@ int main() {
   for (;;) {
 
     /* Wait for incoming connection. */
+    fmt::print("watting for clients\n");
     MotorCient client {socket.accpetClient()};
 
     socket.processClient(client);

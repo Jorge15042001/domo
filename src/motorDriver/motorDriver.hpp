@@ -32,10 +32,12 @@ public:
   // TODO: readMessage???
   [[nodiscard]] bool writeMessage(const char *const msg);
   [[nodiscard]] MotorResponse goHome();
+  [[nodiscard]] MotorResponse relativeMove(const std::double_t speed, const std::double_t movement, const MovementUnit unit) ;
+  [[nodiscard]] MotorResponse absoluteMove(const std::double_t speed, const std::double_t movement, const MovementUnit unit) ;
   [[nodiscard]] MotorResponse reset();
-  [[nodiscard]] MotorResponse goToPosition(const double position);
-  [[nodiscard]] MotorResponse moveMilimiters(const double milimiters);
-  [[nodiscard]] MotorResponse moveContinuous(const double start,
-                                             const double end);
+  // [[nodiscard]] MotorResponse goToPosition(const double position);
+  // [[nodiscard]] MotorResponse moveMilimiters(const double milimiters);
+  // [[nodiscard]] MotorResponse moveContinuous(const double start,
+                                             // const double end);
 };
 

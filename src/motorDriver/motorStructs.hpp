@@ -13,6 +13,7 @@ enum MotorMode{
   HOME_MODE = 1,
   RELATIVE = 2,
   ABSOLUTE = 3,
+  END = 4,
   };
 enum MovementUnit{
   mm = 1,
