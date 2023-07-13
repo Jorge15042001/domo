@@ -1,51 +1,6 @@
 [
  {
-  "directory": "/home/jorge1504/projects/domo",
-  "arguments": [
-   "g++",
-   "-Wall",
-   "-Wextra",
-   "-fsanitize=address",
-   "-std=c++20",
-   "-c",
-   "-o",
-   "build/obj/motorDriver/main.o",
-   "src/motorDriver/main.cpp"
-  ],
-  "file": "src/motorDriver/main.cpp"
- },
- {
-  "directory": "/home/jorge1504/projects/domo",
-  "arguments": [
-   "g++",
-   "-Wall",
-   "-Wextra",
-   "-fsanitize=address",
-   "-std=c++20",
-   "-c",
-   "-o",
-   "build/obj/motorDriver/motorDriver.o",
-   "src/motorDriver/motorDriver.cpp"
-  ],
-  "file": "src/motorDriver/motorDriver.cpp"
- },
- {
-  "directory": "/home/jorge1504/projects/domo",
-  "arguments": [
-   "g++",
-   "-Wall",
-   "-Wextra",
-   "-fsanitize=address",
-   "-std=c++20",
-   "-c",
-   "-o",
-   "build/obj/motorDriver/socketHandler.o",
-   "src/motorDriver/socketHandler.cpp"
-  ],
-  "file": "src/motorDriver/socketHandler.cpp"
- },
- {
-  "directory": "/home/jorge1504/projects/domo",
+  "directory": "/home/jvulgari/projects/domo",
   "arguments": [
    "g++",
    "-Wall",
@@ -60,7 +15,7 @@
   "file": "src/controller/main.cpp"
  },
  {
-  "directory": "/home/jorge1504/projects/domo",
+  "directory": "/home/jvulgari/projects/domo",
   "arguments": [
    "g++",
    "-Wall",
@@ -75,13 +30,112 @@
   "file": "src/controller/socketHandler.cpp"
  },
  {
-  "directory": "/home/jorge1504/projects/domo",
+  "directory": "/home/jvulgari/projects/domo",
   "arguments": [
    "g++",
    "-Wall",
    "-Wextra",
    "-fsanitize=address",
    "-std=c++20",
+   "-c",
+   "-o",
+   "build/obj/motorDriver/main.o",
+   "src/motorDriver/main.cpp"
+  ],
+  "file": "src/motorDriver/main.cpp"
+ },
+ {
+  "directory": "/home/jvulgari/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-c",
+   "-o",
+   "build/obj/motorDriver/motorDriver.o",
+   "src/motorDriver/motorDriver.cpp"
+  ],
+  "file": "src/motorDriver/motorDriver.cpp"
+ },
+ {
+  "directory": "/home/jvulgari/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-c",
+   "-o",
+   "build/obj/motorDriver/socketHandler.o",
+   "src/motorDriver/socketHandler.cpp"
+  ],
+  "file": "src/motorDriver/socketHandler.cpp"
+ },
+ {
+  "directory": "/home/jvulgari/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-I/usr/include/gstreamer-1.0",
+   "-I/usr/include/orc-0.4",
+   "-I/usr/include/glib-2.0",
+   "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+   "-I/usr/include/gobject-introspection-1.0",
+   "-isystem",
+   "/usr/include/opencv4",
+   "-pthread",
+   "-c",
+   "-o",
+   "build/obj/cameraDriver/cameraDriver.o",
+   "src/cameraDriver/cameraDriver.cpp"
+  ],
+  "file": "src/cameraDriver/cameraDriver.cpp"
+ },
+ {
+  "directory": "/home/jvulgari/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-I/usr/include/gstreamer-1.0",
+   "-I/usr/include/orc-0.4",
+   "-I/usr/include/glib-2.0",
+   "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+   "-I/usr/include/gobject-introspection-1.0",
+   "-isystem",
+   "/usr/include/opencv4",
+   "-pthread",
+   "-c",
+   "-o",
+   "build/obj/cameraDriver/ctcamproperty.o",
+   "src/cameraDriver/ctcamproperty.cpp"
+  ],
+  "file": "src/cameraDriver/ctcamproperty.cpp"
+ },
+ {
+  "directory": "/home/jvulgari/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-I/usr/include/gstreamer-1.0",
+   "-I/usr/include/orc-0.4",
+   "-I/usr/include/glib-2.0",
+   "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+   "-I/usr/include/gobject-introspection-1.0",
+   "-isystem",
+   "/usr/include/opencv4",
+   "-pthread",
    "-c",
    "-o",
    "build/obj/cameraDriver/main.o",
@@ -90,33 +144,49 @@
   "file": "src/cameraDriver/main.cpp"
  },
  {
-  "directory": "/home/jorge1504/projects/domo",
+  "directory": "/home/jvulgari/projects/domo",
   "arguments": [
    "g++",
    "-Wall",
    "-Wextra",
    "-fsanitize=address",
    "-std=c++20",
-   "-c",
-   "-o",
-   "build/obj/cameraDriver/motorDriver.o",
-   "src/cameraDriver/motorDriver.cpp"
-  ],
-  "file": "src/cameraDriver/motorDriver.cpp"
- },
- {
-  "directory": "/home/jorge1504/projects/domo",
-  "arguments": [
-   "g++",
-   "-Wall",
-   "-Wextra",
-   "-fsanitize=address",
-   "-std=c++20",
+   "-I/usr/include/gstreamer-1.0",
+   "-I/usr/include/orc-0.4",
+   "-I/usr/include/glib-2.0",
+   "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+   "-I/usr/include/gobject-introspection-1.0",
+   "-isystem",
+   "/usr/include/opencv4",
+   "-pthread",
    "-c",
    "-o",
    "build/obj/cameraDriver/socketHandler.o",
    "src/cameraDriver/socketHandler.cpp"
   ],
   "file": "src/cameraDriver/socketHandler.cpp"
+ },
+ {
+  "directory": "/home/jvulgari/projects/domo",
+  "arguments": [
+   "g++",
+   "-Wall",
+   "-Wextra",
+   "-fsanitize=address",
+   "-std=c++20",
+   "-I/usr/include/gstreamer-1.0",
+   "-I/usr/include/orc-0.4",
+   "-I/usr/include/glib-2.0",
+   "-I/usr/lib/x86_64-linux-gnu/glib-2.0/include",
+   "-I/usr/include/gobject-introspection-1.0",
+   "-isystem",
+   "/usr/include/opencv4",
+   "-pthread",
+   "-c",
+   "-o",
+   "build/obj/cameraDriver/tcamcamera.o",
+   "src/cameraDriver/tcamcamera.cpp"
+  ],
+  "file": "src/cameraDriver/tcamcamera.cpp"
  }
 ]

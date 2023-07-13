@@ -24,7 +24,8 @@ public:
   CameraClient &operator=(const CameraClient &other) = delete;
   CameraClient &operator=(CameraClient &&other) = delete;
 
-  void sendMessage();
+  void reply(const CameraResponse& res)const;
+  CameraMessage readMessage()const ;
 };
 
 class CameraSocket {
@@ -33,18 +34,23 @@ class CameraSocket {
 
   int createSocket() const;
   void bindSocket() const;
-  //TODO: move this method to the client
-  [[nodiscard]] CameraMessage readMessage(const int client_id) const;
-  [[nodiscard]] bool writeMessage(const int client_id, const CameraResponse&msg) const;
+  // TODO: move this method to the client
+  //  [[nodiscard]] CameraMessage readMessage(const int client_id) const;
+  //  [[nodiscard]] bool writeMessage(const int client_id, const
+  //  CameraResponse&msg) const;
 
-  void processSnapMode(const CameraClient &client, const CameraMessage &msg) const;
-  void processContinuousMode(const CameraClient &client,
-                         const CameraMessage &msg) const;
+  [[nodiscard]] CameraResponse processSnapMode(const CameraClient &client,
+                                               const CameraMessage &msg) const;
+  [[nodiscard]] CameraResponse
+  processStartRecording(const CameraClient &client,
+                        const CameraMessage &msg) const;
+  [[nodiscard]] CameraResponse
+  processEndRecording(const CameraClient &client,
+                        const CameraMessage &msg) const;
 
 public:
   mutable CameraDriver camera;
-  CameraSocket(const char *const socket_name, const char *const motor_port,
-              const int bdrate);
+  CameraSocket(const char *const socket_name, const char *const camera_id);
   ~CameraSocket();
 
   CameraSocket(const CameraSocket &other) = delete;

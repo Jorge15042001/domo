@@ -1,11 +1,38 @@
 #include "socketHandler.hpp"
 #include <cstddef>
+#include <cstdlib>
 #include <iostream>
 #include <unistd.h>
+#include <memory>
 
-CameraSocket::CameraSocket(const char *const SOCKET_NAME,
-                         const char *const motor_port, const int bdrate)
-    : socket_name(SOCKET_NAME), camera(motor_port, bdrate) {
+void CameraClient::reply(const CameraResponse& res)const{
+  write(client_id, &res, sizeof(res));
+}
+CameraMessage CameraClient::readMessage()const{
+  CameraMessagePartial msgPartial;
+  const int ret1 = read(client_id, &msgPartial, sizeof(CameraMessagePartial));
+
+  if (ret1 == -1) {
+    perror("Failed to read message from server");
+    exit(EXIT_FAILURE);
+  }
+
+  std::string file_path;
+  file_path.reserve(msgPartial.path_length);
+  // std::unique_ptr<char[]> file_path;
+  // file_path.reset((char*)malloc(msgPartial.path_length));
+  // char * file_path = (char*)malloc(msgPartial.path_length);
+  const int ret2 = read(client_id, file_path.data(),msgPartial.path_length);
+  if (ret2 == -1) {
+    perror("Failed to read message from server");
+    exit(EXIT_FAILURE);
+  }
+
+
+  return {msgPartial.mode, file_path.data()};
+}
+CameraSocket::CameraSocket(const char *const SOCKET_NAME, const char *camera_id)
+    : socket_name(SOCKET_NAME), camera(camera_id) {
   // std::cout<<"creating socket"<<std::endl;
   this->socket_id = this->createSocket();
   this->bindSocket();
@@ -75,83 +102,66 @@ int CameraSocket::accpetClient() const {
   return data_socket;
 }
 
-CameraMessage CameraSocket::readMessage(const int client_id) const {
-
-  CameraMessage msg;
-
-  const int ret = read(client_id, &msg, sizeof(CameraMessage));
-
-  if (ret == -1) {
-    perror("Failed to read message from server");
-    exit(EXIT_FAILURE);
-  }
-  return msg;
-}
-bool CameraSocket::writeMessage(const int client_id,
-                               const CameraResponse &msg) const {
-  const int ret = write(client_id, &msg, sizeof(CameraResponse));
-  if (ret == -1) {
-    perror("Failed to read message from server");
-    exit(EXIT_FAILURE);
-  }
-  return ret > 0;
-}
-
+// CameraMessage CameraSocket::readMessage(const int client_id) const {
+//
+//   CameraMessage msg;
+//
+//   const int ret = read(client_id, &msg, sizeof(CameraMessage));
+//
+//   if (ret == -1) {
+//     perror("Failed to read message from server");
+//     exit(EXIT_FAILURE);
+//   }
+//   return msg;
+// }
+// bool CameraSocket::writeMessage(const int client_id,
+//                                 const CameraResponse &msg) const {
+//   const int ret = write(client_id, &msg, sizeof(CameraResponse));
+//   if (ret == -1) {
+//     perror("Failed to read message from server");
+//     exit(EXIT_FAILURE);
+//   }
+//   return ret > 0;
+// }
+//
 void CameraSocket::processClient(const CameraClient &client) const {
-  const CameraMessage msg = readMessage(client.client_id);
-  switch (msg.mode) {
-    break;
-  case SNAP_MODE:
-    this->processSnapMode(client, msg);
-    break;
-  case CONTINUOUS_MODE:
-    this->processContinuousMode(client, msg);
-    break;
-  default:
-    perror("Failed to process message");
-    exit(EXIT_FAILURE);
+  bool loop = true;
+  while (loop) {
+    const CameraMessage msg = client.readMessage();
+    switch (msg.mode) {
+      break;
+    case END_CONNECTION:
+      loop = false;
+    case SNAP_MODE: {
+      const auto response = this->processSnapMode(client, msg);
+      client.reply(response);
+    } break;
+    case START_RECORDING: {
+      const auto response = this->processStartRecording(client, msg);
+      client.reply(response);
+    } break;
+    case END_RECORDING: {
+      const auto response = this->processEndRecording(client, msg);
+      client.reply(response);
+    } break;
+    default:
+      perror("Failed to process message");
+      exit(EXIT_FAILURE);
+    }
   }
 }
 
-
-void CameraSocket::processSnapMode(const CameraClient &client,
-                                  const CameraMessage &msg) const {
-
-
-  while (true){
-  CameraResponse res = this->camera.takeSnapshot(msg.path);
-  }
-
-  // for (std::size_t i = 0; i < msg.steps; i++) {
-  //
-  //   res = this->camera.moveMilimiters(step_size);
-  //   if (!res.success)
-  //     return;
-  //   // signal the client
-  //   const bool write_succ = this->writeMessage(client.client_id, {true, false});
-  //   if (!write_succ)
-  //     break;
-  //   // wait for the client to con
-  //   CameraMessage m = this->readMessage(client.client_id);
-  //   if (m.mode!=CONTINUE)break;
-  // }
-  //
-  // repley to client
-  const bool write_succ = this->writeMessage(client.client_id, {true, true});
+CameraResponse CameraSocket::processSnapMode(const CameraClient &client,
+                                             const CameraMessage &msg) const {
+  return camera.takeSnapshot(msg.path);
 }
-void CameraSocket::processContinuousMode(const CameraClient &client,
+CameraResponse
+CameraSocket::processStartRecording(const CameraClient &client,
                                     const CameraMessage &msg) const {
-  // CameraResponse res = this->motor.moveContinuous(msg.value1, msg.value2);
-  // const CameraResponse res1 = this->camera.goToPosition(msg.value1);
-  // // signal the client
-  //   const bool write_succ = this->writeMessage(client.client_id, {true, false});
-  //   if (!write_succ)return;
-  //   //wait for CONTINUE signal
-  //   const CameraMessage m = this->readMessage(client.client_id);
-  //   if (m.mode!=CONTINUE)return;
-  //
-  // const CameraResponse res2 = this->camera.goToPosition(msg.value2);
-  // // reply to the client
-  // const bool write_succ2 = this->writeMessage(client.client_id, res2);
-  //
+  return camera.startRecording(msg.path);
+}
+CameraResponse
+CameraSocket::processEndRecording(const CameraClient &client,
+                                    const CameraMessage &msg) const {
+  return camera.endRecording();
 }

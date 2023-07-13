@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../motorDriver/motorStructs.hpp"
+#include "../cameraDriver/cameraStructs.hpp"
 
 
 #include <errno.h>
@@ -33,6 +34,23 @@ public:
 
 };
 
+class CameraSocketClient{
+  int id;
+  const std::string socket_name;
+public:
+  CameraSocketClient(const char* const socket_name);
+  ~CameraSocketClient();
+  void connectToSocket();
+
+  [[nodiscard]] bool sendMessage(const CameraMessage& msg)const ;
+  [[nodiscard]] std::optional<CameraResponse> readResponse()const ;
+
+  CameraSocketClient(const CameraSocketClient &other) = delete;
+  CameraSocketClient(CameraSocketClient&&other) = delete;
+  CameraSocketClient &operator=(const CameraSocketClient&other) = delete;
+  CameraSocketClient &operator=(CameraSocketClient &&other) = delete;
+
+};
 // int createSocket();
 // void connectToSocket(const int,const char*);
 // void sendDesiredPath(const int,const MotorPath *const);

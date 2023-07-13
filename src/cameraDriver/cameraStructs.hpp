@@ -1,14 +1,18 @@
 #pragma once
 
 #include <cstddef>
-enum MotorMode { SNAP_MODE, CONTINUOUS_MODE, CONTINUE };
+#include <filesystem>
+enum CameraMode { SNAP_MODE, START_RECORDING, END_RECORDING, END_CONNECTION};
+struct CameraMessagePartial{
+  CameraMode mode;
+  std::size_t path_length;
+};
 
 struct CameraMessage{
-  int mode;
-  char* path;
+  CameraMode mode;
+  std::filesystem::path path;
 };
 
 struct CameraResponse{
   bool success;
-  bool completed;
 };

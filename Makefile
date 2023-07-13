@@ -20,7 +20,12 @@ OBJ_FILES_cameraServer := $(patsubst $(SRC_DIR_cameraServer)/%.cpp,$(OBJ_DIR_cam
 
 # CXXFLAGS := -O3 -Wall -Wextra  -fsanitize=address
 CXXFLAGS := -Wall -Wextra  -fsanitize=address -std=c++20
+GSTLIB:=`pkg-config --cflags --libs gstreamer-1.0 gstreamer-app-1.0`
+TCAMLIB:=`pkg-config --cflags --libs tcam` -rdynamic 
+OPENCVLIB:=`pkg-config --cflags --libs opencv4`
 
+
+INCLUDE_FLAGS:=-I/usr/include/gstreamer-1.0 -I/usr/include/orc-0.4 -I/usr/include/glib-2.0 -I/usr/lib/x86_64-linux-gnu/glib-2.0/include -I/usr/include/gobject-introspection-1.0 -isystem /usr/include/opencv4  -pthread 
 
 
 
@@ -45,11 +50,11 @@ $(OUTPUT_SERVER_MOTOR): $(OBJ_FILES_motorServer)
 
 $(OBJ_DIR_cameraServer)/%.o: $(SRC_DIR_cameraServer)/%.cpp
 	mkdir -p $(OBJ_DIR_cameraServer)
-	$(CC)   $(CXXFLAGS)   -c -o $@ $^
+	$(CC)   $(CXXFLAGS) $(INCLUDE_FLAGS)   -c -o $@ $^
 
 $(OUTPUT_SERVER_CAMERA): $(OBJ_FILES_cameraServer)
 	mkdir -p $(OBJ_DIR_cameraServer)
-	$(CC)  -o $@ $^   $(CXXFLAGS) -lCppLinuxSerial
+	$(CC)  -o $@ $^  $(GSTLIB) $(TCAMLIB) $(OPENCVLIB) $(CXXFLAGS) $(INCLUDE_FLAGS) -lfmt
 
 all: $(OUTPUT_SERVER_MOTOR) $(OUTPUT_SERVER_CAMERA) $(OUTPUT_CONTROLER)
 
